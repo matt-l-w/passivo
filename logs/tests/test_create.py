@@ -76,7 +76,9 @@ class TestCreate(TestCase):
         self.assertIsNone(parse_minutes('10'))
         self.assertIsNone(parse_project(''))
 
-    def test_create_returns_200_on_success(self):
+    @patch('logs.slack_utils.is_slack_event')
+    def test_create_returns_200_on_success(self, mock_slack_utils):
+        mock_slack_utils.return_value = True
         from logs.create import create
 
         with patch.dict('os.environ', {'DYNAMODB_TABLE': 'some-table-name'}):
@@ -92,6 +94,7 @@ class TestCreate(TestCase):
             'createdAt': 1000,
         })
 
+    @patch.dict('os.environ', {'SLACK_SIGNING_SECRET': 'mysecret'})
     def test_create_returns_400_on_missing_time(self):
         from logs.create import create
 
@@ -101,6 +104,7 @@ class TestCreate(TestCase):
         self.assertEqual(400, response['statusCode'])
         self.put_item_mock.assert_not_called()
 
+    @patch.dict('os.environ', {'SLACK_SIGNING_SECRET': 'mysecret'})
     def test_create_returns_400_on_missing_project(self):
         from logs.create import create
 

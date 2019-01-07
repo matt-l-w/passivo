@@ -16,6 +16,10 @@ This serverless app is designed to be used a slack app, allowing a simple log of
 
 This service has a separate directory for all the log operations. For each operation exactly one file exists e.g. `logs/create.py`.
 
+The service uses the secret key assigned to your slack app in order to authenticate requests.  This can be found my going to the
+(API section of slack)[api.slack.com/apps/], selecting your app and clicking on the 'Basic Information' section.
+The secret key will need to be provided at deployment time using the env var `SLACK_SIGNING_SECRET`.
+
 ## Setup
 
 ```bash
@@ -32,7 +36,10 @@ python3 -m unittest
 
 ## Deploy
 
-In order to deploy the endpoint simply run
+In order to deploy the endpoint, ensure the following environment variables are set up:
+- SLACK_SIGNING_KEY
+
+Then simply run
 
 ```bash
 serverless deploy
@@ -55,11 +62,11 @@ region: eu-west-2
 api keys:
   None
 endpoints:
-  POST - https://45wf34z5yf.execute-api.us-east-1.amazonaws.com/dev/logs
-  GET - https://45wf34z5yf.execute-api.us-east-1.amazonaws.com/dev/logs
+  POST - https://45wf34z5yf.execute-api.eu-west-2.amazonaws.com/dev/logs
+  GET - https://45wf34z5yf.execute-api.eu-west-2.amazonaws.com/dev/logs
 functions:
-  passivo-dev-list: arn:aws:lambda:us-east-1:488110005556:function:serverless-rest-api-with-dynamodb-dev-list
-  passivo-dev-create: arn:aws:lambda:us-east-1:488110005556:function:serverless-rest-api-with-dynamodb-dev-create
+  passivo-dev-list: arn:aws:lambda:eu-west-2:488110005556:function:serverless-rest-api-with-dynamodb-dev-list
+  passivo-dev-create: arn:aws:lambda:eu-west-2:488110005556:function:serverless-rest-api-with-dynamodb-dev-create
 ```
 
 ### Production

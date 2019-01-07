@@ -1,4 +1,8 @@
-from unittest import TestCase
+import hmac
+import hashlib
+import time
+
+from unittest import TestCase, mock
 
 class TestSlackParse(TestCase):
     slack_example = "\
@@ -41,3 +45,46 @@ class TestSlackParse(TestCase):
             slack_post_to_dict(event),
             expected)
         
+class TestSlackValidation(TestCase):
+
+    def test_no_secret_raises_exception(self):
+        from logs.slack_utils import is_slack_event
+
+        with self.assertRaises(AttributeError):
+            is_slack_event({})
+
+    @mock.patch.dict('os.environ', {'SLACK_SIGNING_SECRET': 'mysecret'})
+    def test_returns_true_when_signatures_match(self):
+        from logs.slack_utils import is_slack_event
+        
+        current_time = time.time()
+        slack_signing_secret = bytes('mysecret', 'utf-8')
+        sig_basestring = f"v0:{current_time}:bodytext".encode('utf-8')
+
+        test_slack_signature = 'v0=' + hmac.new(slack_signing_secret, sig_basestring, hashlib.sha256).hexdigest()
+
+        test_event = {
+            'headers':{
+                'X-Slack-Signature': test_slack_signature,
+                'X-Slack-Request-Timestamp': current_time
+            },
+            'body':'bodytext'
+        }
+
+        self.assertTrue(is_slack_event(test_event, current_time))
+
+
+class TestReadHeader(TestCase):
+
+    def test_header_present_returns_header(self):
+        from logs.slack_utils import read_header_or_return
+
+        self.assertEqual(
+            read_header_or_return('header1', {'header1': 'value'}),
+            'value')
+
+    def test_header_not_present_returns_none(self):
+        from logs.slack_utils import read_header_or_return
+
+        self.assertIsNone(read_header_or_return('header1', {}))
+

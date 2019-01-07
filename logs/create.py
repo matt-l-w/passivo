@@ -5,7 +5,7 @@ import time
 import uuid
 import re
 
-from logs.slack_utils import slack_post_to_dict
+from logs.slack_utils import slack_post_to_dict, is_slack_event
 
 import boto3
 dynamodb = boto3.resource('dynamodb')
@@ -13,6 +13,11 @@ dynamodb = boto3.resource('dynamodb')
 
 def create(event, context):
     logging.info("Received event:{}".format(event))
+    if not is_slack_event(event):
+        return {
+            "statusCode": 403,
+            "message": "This app is not authorised to do that."
+        }
 
     parsed_body = slack_post_to_dict(event)
     text = parsed_body['text']
