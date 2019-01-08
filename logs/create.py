@@ -21,7 +21,7 @@ def create(event, context):
 
     parsed_body = slack_post_to_dict(event)
     text = parsed_body['text']
-    user_name = parsed_body['user_name']
+    user_id = parsed_body['user_id']
     
     minutes = parse_minutes(text)
     project = parse_project(text)
@@ -36,7 +36,7 @@ def create(event, context):
 
     item = {
         'id': str(uuid.uuid1()),
-        'username': user_name,
+        'user_id': user_id,
         'command': text,
         'minutes': minutes,
         'project': project,

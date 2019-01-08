@@ -87,7 +87,7 @@ class TestCreate(TestCase):
         self.assertEqual(200, response['statusCode'])
         self.put_item_mock.assert_called_once_with(Item={
             'id': "1234",
-            'username': "Steve",
+            'user_id': "U2147483697",
             'command': "2 hours on slack",
             'minutes': "120",
             'project': "slack",
