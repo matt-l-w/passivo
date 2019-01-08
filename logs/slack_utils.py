@@ -1,6 +1,7 @@
 import hmac
 import hashlib
 import logging
+import re
 import time
 from os import getenv
 from urllib.parse import parse_qs
@@ -51,4 +52,24 @@ def read_header_or_return(header, headers):
         return headers[header]
     except KeyError:
         logging.error(f"Unable to read '{header}' header from event with headers: {headers}")
+        return None
+
+def extract_user_id_from_escaped_tag(command):
+    """
+    Extract a user ID from an escaped handle provided by slack
+    """
+    search = re.search('\<\@(\w+)', command)
+    if search:
+        return search.group(1)
+    else:
+        return None
+
+def extract_user_handle_from_escaped_tag(command):
+    """
+    Extract a user handle from an escaped handle provided by slack
+    """
+    search = re.search('\|(\w+)\>', command)
+    if search:
+        return search.group(1)
+    else:
         return None

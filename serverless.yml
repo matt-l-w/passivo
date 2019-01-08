@@ -28,7 +28,7 @@ functions:
     handler: logs/create.create
     events:
       - http:
-          path: logs
+          path: log
           method: post
           cors: true
 
@@ -37,7 +37,7 @@ functions:
     events:
       - http:
           path: logs
-          method: get
+          method: post # all slack slash commands are POST requests
           cors: true
 
 resources:

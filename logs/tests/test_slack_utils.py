@@ -88,3 +88,27 @@ class TestReadHeader(TestCase):
 
         self.assertIsNone(read_header_or_return('header1', {}))
 
+
+class TestExtractUserId(TestCase):
+
+    def test_no_user_id_returns_none(self):
+        from logs.slack_utils import extract_user_id_from_escaped_tag
+        self.assertIsNone(extract_user_id_from_escaped_tag('something else'))
+
+    def test_user_id_extracted_from_command(self):
+        from logs.slack_utils import extract_user_id_from_escaped_tag
+        id = extract_user_id_from_escaped_tag('<@U1234|andyP>')
+
+        self.assertEqual(id, 'U1234')
+
+class TestExtractUserHandle(TestCase):
+
+    def test_no_user_handle_returns_none(self):
+        from logs.slack_utils import extract_user_handle_from_escaped_tag
+        self.assertIsNone(extract_user_handle_from_escaped_tag('something else'))
+
+    def test_user_id_extracted_from_command(self):
+        from logs.slack_utils import extract_user_handle_from_escaped_tag
+        id = extract_user_handle_from_escaped_tag('<@U1234|andyP>')
+
+        self.assertEqual(id, 'andyP')
