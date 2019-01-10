@@ -6,6 +6,7 @@ import uuid
 import re
 
 from utils.slack_utils import slack_post_to_dict, is_slack_event
+from projects.list import get_project_list
 
 import boto3
 dynamodb = boto3.resource('dynamodb')
@@ -28,7 +29,16 @@ def create(event, context):
     if not minutes or not project:
         logging.error("Couldn't parse '{}'".format(text))
         logging.error("Original request '{}'".format(parsed_body))
-        return {"statusCode": 400, "message": "Invalid Format"}
+        return {"statusCode": 200, "body": "Sorry, I couldn't understand you. Try 'X minutes _on_ project'"}
+
+    project_list = get_project_list()
+    project_names = list(map(lambda p: p['name'], project_list))
+    if project not in project_names:
+        formatted_project_list = "\n".join(project_names)
+        return {
+            "statusCode": 200,
+            "body": f"I couldn't find {project} in the list of available projects.  Here's all the ones I know:\n{formatted_project_list}"
+        }
     
     timestamp = int(time.time() * 1000)
 
@@ -49,7 +59,7 @@ def create(event, context):
     # create a response
     response = {
         "statusCode": 200,
-        "body": "Logged {} minutes to {}".format(minutes, project)
+        "body": "Logged {} minutes on {}".format(minutes, project)
     }
 
     return response
@@ -79,7 +89,7 @@ def parse_minutes(command):
 
 def parse_project(command):
     """
-    Match 1: any text after ' on '.  Quotes escaped.
+    Match 1: any text after 'on'.  Quotes escaped.
     """
     search = re.search('(?<=\ on\ )\'?\"?([\w\ ]*)\'?\"?$', command)
     if search:

@@ -11,25 +11,24 @@ def get_project_list():
 
     result = table.scan()
 
-    if not result['Items']:
-        logging.warning(f"Could not find any projects. Table scan result: {result}")
-        response = {
+    return result['Items']
+    
+def format_response(items):
+    logging.info(f"Formatting: {items}")
+    if not items:
+        logging.warning("Could not find any projects.")
+        return {
             "statusCode": 200,
             "body": "I couldn't find any projects listed. Try adding one!"
         }
-    else:        
-        response = {
-            "statusCode": 200,
-            "body": format_response(result['Items'])
-        }
 
-    return response
-    
-def format_response(items):
     string = "*Projects*\n"
-    for item in sorted(items, key=lambda item: item['name']):
+    for item in sorted(items, key=lambda x: x['name']):
         name = item['name']
         work_order = item['work_order']
         string += f"- {name}\n"
 
-    return string
+    return {
+        "statusCode": 200,
+        "body": string
+    }

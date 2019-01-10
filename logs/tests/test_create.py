@@ -76,7 +76,7 @@ class TestCreate(TestCase):
         self.assertIsNone(parse_minutes('10'))
         self.assertIsNone(parse_project(''))
 
-    @patch('logs.slack_utils.is_slack_event')
+    @patch('utils.slack_utils.is_slack_event')
     def test_create_returns_200_on_success(self, mock_slack_utils):
         mock_slack_utils.return_value = True
         from logs.create import create

@@ -38,7 +38,7 @@ class TestList(TestCase):
         sys.modules['boto3'] = self.boto3_mock
         sys.modules['boto3.dynamodb.conditions'] = conditions_mock
 
-    @patch('logs.slack_utils.is_slack_event')
+    @patch('utils.slack_utils.is_slack_event')
     def test_returns_200_on_success(self, mock_is_slack_event):
         from logs.list import list
         mock_is_slack_event.return_value = True
@@ -52,7 +52,7 @@ class TestList(TestCase):
         self.assertEqual(200, response['statusCode'])
 
 
-    # @patch('logs.slack_utils.is_slack_event')
+    # @patch('utils.slack_utils.is_slack_event')
     # def test_returns_404_message_on_no_matching_items(self, mock_is_slack_event):
     #     from logs.list import list
     #     mock_is_slack_event.return_value = True

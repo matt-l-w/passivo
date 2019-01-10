@@ -68,7 +68,7 @@ def extract_user_handle_from_escaped_tag(command):
     """
     Extract a user handle from an escaped handle provided by slack
     """
-    search = re.search('\|(\w+)\>', command)
+    search = re.search('\|([\w.]+)\>', command)
     if search:
         return search.group(1)
     else:

@@ -28,14 +28,14 @@ def list(event, context):
     if user_id is None:
         logging.error(f"No user ID parsable from command: {command}")
         return {
-            "statusCode":400,
+            "statusCode":200,
             "body":"No valid user provided"
         }
-    user_handle = extract_user_handle_from_escaped_tag(parsed_body['command'])
-    if user_id is None:
+    user_handle = extract_user_handle_from_escaped_tag(command)
+    if user_handle is None:
         logging.error(f"No user handle parsable from command: {command}")
         return {
-            "statusCode":400,
+            "statusCode":200,
             "body":"No valid user provided"
         }
 
@@ -50,7 +50,7 @@ def list(event, context):
     if not result['Items']:
         logging.warning(f"Could not find time logged for {user_handle}")
         response = {
-            "statusCode": 404,
+            "statusCode": 200,
             "body": f"I couldn't find any time logged for @{user_handle}."
         }
     else:

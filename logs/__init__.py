@@ -1,1 +1,1 @@
-from logs import slack_utils
+from utils import slack_utils

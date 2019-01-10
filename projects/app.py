@@ -2,7 +2,7 @@ import logging
 
 from utils.slack_utils import is_slack_event, slack_post_to_dict
 
-from projects.list import get_project_list
+from projects.list import get_project_list, format_response
 from projects.add import add_project
 from projects.remove import remove_project
 from projects.update import update_project
@@ -33,7 +33,7 @@ def handler(event, context):
             "body": help_text
         }
     if command == "list":
-        return get_project_list()
+        return format_response(get_project_list())
 
     elif command == "add":
         name = ' '.join(command_words[1:-1]).replace("\"","").replace("\'", "")
