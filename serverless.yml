@@ -7,7 +7,8 @@ provider:
   region: eu-west-2
   runtime: python3.6
   environment:
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    DYNAMODB_LOG_TABLE: ${self:service}-logs-${opt:stage, self:provider.stage}
+    DYNAMODB_PROJECT_TABLE: ${self:service}-projects-${opt:stage, self:provider.stage}
     SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
   iamRoleStatements:
     - Effect: Allow
@@ -18,7 +19,9 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+      Resource: 
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_LOG_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_PROJECT_TABLE}"
   package:
     exclude:
       - tests/**
@@ -40,6 +43,14 @@ functions:
           method: post # all slack slash commands are POST requests
           cors: true
 
+  projects:
+    handler: projects/app.handler
+    events:
+      - http:
+          path: projects
+          method: post
+          cors: true
+
 resources:
   Resources:
     LogsDynamoDbTable:
@@ -57,4 +68,20 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        TableName: ${self:provider.environment.DYNAMODB_LOG_TABLE}
+    ProjectsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_PROJECT_TABLE}

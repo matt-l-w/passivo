@@ -81,7 +81,7 @@ class TestCreate(TestCase):
         mock_slack_utils.return_value = True
         from logs.create import create
 
-        with patch.dict('os.environ', {'DYNAMODB_TABLE': 'some-table-name'}):
+        with patch.dict('os.environ', {'DYNAMODB_LOG_TABLE': 'some-table-name'}):
             response = create({'body': self.slack_example}, {})
 
         self.assertEqual(200, response['statusCode'])
@@ -98,7 +98,7 @@ class TestCreate(TestCase):
     def test_create_returns_400_on_missing_time(self):
         from logs.create import create
 
-        with patch.dict('os.environ', {'DYNAMODB_TABLE': 'some-table-name'}):
+        with patch.dict('os.environ', {'DYNAMODB_LOG_TABLE': 'some-table-name'}):
             response = create({'body': self.slack_example.replace('2%20hours','hour')}, {})
 
         self.assertEqual(400, response['statusCode'])
@@ -108,7 +108,7 @@ class TestCreate(TestCase):
     def test_create_returns_400_on_missing_project(self):
         from logs.create import create
 
-        with patch.dict('os.environ', {'DYNAMODB_TABLE': 'some-table-name'}):
+        with patch.dict('os.environ', {'DYNAMODB_LOG_TABLE': 'some-table-name'}):
             response = create({'body': self.slack_example.replace('%20on%20slack','')}, {})
 
         self.assertEqual(400, response['statusCode'])

@@ -21,7 +21,7 @@ class TestSlackParse(TestCase):
         &trigger_id=13345224609.738474920.8088930838d88f008e0"
 
     def test_www_form_urlencoded_parsed(self):
-        from logs.slack_utils import slack_post_to_dict
+        from utils.slack_utils import slack_post_to_dict
         event = {
             'body': self.slack_example
         }
@@ -48,14 +48,14 @@ class TestSlackParse(TestCase):
 class TestSlackValidation(TestCase):
 
     def test_no_secret_raises_exception(self):
-        from logs.slack_utils import is_slack_event
+        from utils.slack_utils import is_slack_event
 
         with self.assertRaises(AttributeError):
             is_slack_event({})
 
     @mock.patch.dict('os.environ', {'SLACK_SIGNING_SECRET': 'mysecret'})
     def test_returns_true_when_signatures_match(self):
-        from logs.slack_utils import is_slack_event
+        from utils.slack_utils import is_slack_event
         
         current_time = time.time()
         slack_signing_secret = bytes('mysecret', 'utf-8')
@@ -77,14 +77,14 @@ class TestSlackValidation(TestCase):
 class TestReadHeader(TestCase):
 
     def test_header_present_returns_header(self):
-        from logs.slack_utils import read_header_or_return
+        from utils.slack_utils import read_header_or_return
 
         self.assertEqual(
             read_header_or_return('header1', {'header1': 'value'}),
             'value')
 
     def test_header_not_present_returns_none(self):
-        from logs.slack_utils import read_header_or_return
+        from utils.slack_utils import read_header_or_return
 
         self.assertIsNone(read_header_or_return('header1', {}))
 
@@ -92,11 +92,11 @@ class TestReadHeader(TestCase):
 class TestExtractUserId(TestCase):
 
     def test_no_user_id_returns_none(self):
-        from logs.slack_utils import extract_user_id_from_escaped_tag
+        from utils.slack_utils import extract_user_id_from_escaped_tag
         self.assertIsNone(extract_user_id_from_escaped_tag('something else'))
 
     def test_user_id_extracted_from_command(self):
-        from logs.slack_utils import extract_user_id_from_escaped_tag
+        from utils.slack_utils import extract_user_id_from_escaped_tag
         id = extract_user_id_from_escaped_tag('<@U1234|andyP>')
 
         self.assertEqual(id, 'U1234')
@@ -104,11 +104,11 @@ class TestExtractUserId(TestCase):
 class TestExtractUserHandle(TestCase):
 
     def test_no_user_handle_returns_none(self):
-        from logs.slack_utils import extract_user_handle_from_escaped_tag
+        from utils.slack_utils import extract_user_handle_from_escaped_tag
         self.assertIsNone(extract_user_handle_from_escaped_tag('something else'))
 
     def test_user_id_extracted_from_command(self):
-        from logs.slack_utils import extract_user_handle_from_escaped_tag
+        from utils.slack_utils import extract_user_handle_from_escaped_tag
         id = extract_user_handle_from_escaped_tag('<@U1234|andyP>')
 
         self.assertEqual(id, 'andyP')

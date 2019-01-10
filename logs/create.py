@@ -5,7 +5,7 @@ import time
 import uuid
 import re
 
-from logs.slack_utils import slack_post_to_dict, is_slack_event
+from utils.slack_utils import slack_post_to_dict, is_slack_event
 
 import boto3
 dynamodb = boto3.resource('dynamodb')
@@ -32,7 +32,7 @@ def create(event, context):
     
     timestamp = int(time.time() * 1000)
 
-    table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
+    table = dynamodb.Table(os.environ['DYNAMODB_LOG_TABLE'])
 
     item = {
         'id': str(uuid.uuid1()),

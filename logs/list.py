@@ -5,7 +5,7 @@ import os
 
 from logs import decimalencoder
 from logs.dynamodb_utils import group_db_response_by_date_project
-from logs.slack_utils import is_slack_event, slack_post_to_dict, extract_user_id_from_escaped_tag, extract_user_handle_from_escaped_tag
+from utils.slack_utils import is_slack_event, slack_post_to_dict, extract_user_id_from_escaped_tag, extract_user_handle_from_escaped_tag
 
 import boto3
 from boto3.dynamodb.conditions import Attr
@@ -40,7 +40,7 @@ def list(event, context):
         }
 
     logging.info(f"Scanning table for time logged for {user_id}({user_handle})")
-    table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
+    table = dynamodb.Table(os.environ['DYNAMODB_LOG_TABLE'])
 
     # fetch all logs for that user from the database
     result = table.scan(

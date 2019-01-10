@@ -45,7 +45,7 @@ class TestList(TestCase):
         scan_mock = self.boto3_mock.resource.return_value.Table.return_value.scan
         scan_mock.return_value = self.return_example_success
 
-        with patch.dict('os.environ', {'DYNAMODB_TABLE': 'some-table-name'}):
+        with patch.dict('os.environ', {'DYNAMODB_LOG_TABLE': 'some-table-name'}):
             response = list({'body': self.slack_example}, {})
 
         scan_mock.assert_called_once_with(FilterExpression=self.eq_mock)
@@ -58,7 +58,7 @@ class TestList(TestCase):
     #     mock_is_slack_event.return_value = True
     #     self.scan_mock.return_value = {'Items':[]}
 
-    #     with patch.dict('os.environ', {'DYNAMODB_TABLE': 'some-table-name'}):
+    #     with patch.dict('os.environ', {'DYNAMODB_LOG_TABLE': 'some-table-name'}):
     #         response = list({'body': self.slack_example}, {})
 
     #     self.scan_mock.assert_called_once_with(FilterExpression=self.eq_mock)
