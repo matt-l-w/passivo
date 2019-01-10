@@ -26,7 +26,7 @@ def format_response(items):
     for item in sorted(items, key=lambda x: x['name']):
         name = item['name']
         work_order = item['work_order']
-        string += f"- {name}\n"
+        string += f"- {name} : {work_order}\n"
 
     return {
         "statusCode": 200,
