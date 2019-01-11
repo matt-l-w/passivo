@@ -32,13 +32,18 @@ def create(event, context):
         return {"statusCode": 200, "body": "Sorry, I couldn't understand you. Try 'X minutes _on_ project'"}
 
     project_list = get_project_list()
-    project_names = list(map(lambda p: p['name'], project_list))
-    if project not in project_names:
-        formatted_project_list = "\n".join(project_names)
+    matching_projects = [p for p in project_list if p['name'] == project]
+    if not matching_projects:
+        formatted_project_list = "\n".join([p['name'] for p in project_list])
         return {
             "statusCode": 200,
             "body": f"I couldn't find {project} in the list of available projects.  Here's all the ones I know:\n{formatted_project_list}"
         }
+    
+    if len(matching_projects) > 1:
+        logging.warning(f"Duplicate projects found for key '{project}'.  Continuing with first match...")
+    
+    work_order = matching_projects[0]['work_order']
     
     timestamp = int(time.time() * 1000)
 
@@ -50,6 +55,7 @@ def create(event, context):
         'command': text,
         'minutes': minutes,
         'project': project,
+        'work_order': work_order,
         'createdAt': timestamp,
     }
 

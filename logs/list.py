@@ -68,8 +68,9 @@ def format_response(grouped_items):
     for date in grouped_items.keys():
         string += f"*{date}*\n"
         projects = grouped_items[date]
-        for project in projects:
-            string += f"{project}: {projects[project]} minutes\n"
+        for project_name in projects.keys():
+            project = projects[project_name]    
+            string += f"{project_name} : {project['work_order']} : {project['minutes']} minutes\n"
         string += '\n'
 
     return string
