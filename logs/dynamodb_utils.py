@@ -24,4 +24,4 @@ def group_db_response_by_date_project(response):
 def epoch_to_datetime_string(epoch):
     from datetime import date
 
-    return date.fromtimestamp(int(epoch/1000)).strftime("%x")
+    return date.fromtimestamp(int(epoch/1000)).strftime("%d/%m/%Y")
